@@ -10,7 +10,7 @@ TEST(VectorOfEdgesLoopClosuresAndCovariance, AskedIfInformationIsCorrect_Returns
     std::vector<Eigen::Vector3d> edges{edge, edge, edge, edge};
 
     Eigen::Vector2i lc;
-    lcs << 3, 1;
+    lc << 3, 1;
     std::vector<Eigen::Vector2i> lcs{lc};
 
     Eigen::Vector3d edge_covar;
@@ -21,7 +21,7 @@ TEST(VectorOfEdgesLoopClosuresAndCovariance, AskedIfInformationIsCorrect_Returns
     lc_covar << 1e-3, 1e-3, 1e-1;
     std::vector<Eigen::Vector3d> lc_covars{lc_covar};
 
-    REO optimizer{edges, lcs, edge_covars, lc_covars};
+    REO optimizer = REO(edges, lcs, edge_covars, lc_covars);
 
     EXPECT_TRUE(optimizer.canSolve());
 }
