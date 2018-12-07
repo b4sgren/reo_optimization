@@ -11,7 +11,10 @@ REO::REO(std::vector<Eigen::Vector3d> edges, std::vector<Eigen::Vector2i> lcs,
 
 bool REO::canSolve()
 {
-    if(m_edges.size() == m_edge_covars.size()
+    if(m_edges.size() == 0 || m_edge_covars.size() == 0
+            || m_lcs.size() == 0 || m_lc_covars.size() == 0)
+        return false;
+    else if(m_edges.size() == m_edge_covars.size()
             && m_lcs.size() == m_lc_covars.size())
         return true;
     else
