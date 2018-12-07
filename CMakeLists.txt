@@ -18,7 +18,7 @@ IF(NOT TARGET gtest)
     add_subdirectory(libs/googletest)
 ENDIF()
 
-add_library(OPTIMIZATION
+add_library(OPTIMIZATION STATIC
     reo.h
     reo.cpp
     )
