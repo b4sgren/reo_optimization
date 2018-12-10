@@ -3,7 +3,7 @@
 
 #include <Eigen/Dense>
 #include <vector>
-
+#include <ceres/ceres.h>
 
 class REO
 {

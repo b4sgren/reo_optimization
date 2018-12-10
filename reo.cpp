@@ -1,4 +1,5 @@
 #include "reo.h"
+#include "structures.cpp"
 
 REO::REO(){}
 

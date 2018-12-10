@@ -21,6 +21,7 @@ ENDIF()
 add_library(OPTIMIZATION STATIC
     reo.h
     reo.cpp
+    structures.cpp
     )
 
 add_executable(reo_test reo_test.cpp)

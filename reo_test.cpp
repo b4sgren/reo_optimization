@@ -1,7 +1,14 @@
 #include <gtest/gtest.h>
 #include "reo.h"
+#include "structures.cpp"
 
 #define PI 3.14159625
+
+void expectNearVec(Eigen::Vector3d v1, Eigen::Vector3d v2)
+{
+    for(int i{0}; i<3; i++)
+        EXPECT_NEAR(v1[i], v2[i], .001);
+}
 
 TEST(VectorOfEdgesLoopClosuresAndCovariance, AskedIfInformationIsCorrect_ReturnsTrue)
 {
@@ -49,6 +56,20 @@ TEST(REOWithDifferentVectorLengths, AskedIfSolvable_ReturnsFalse)
     EXPECT_FALSE(optimizer.canSolve());
 }
 
+TEST(TwoEdges, AskedToConcatenate_ReturnsCorrectConcatenation)
+{
+    Eigen::Vector3d edge{1.0, 0.0, PI/2.0};
+    Eigen::Vector3d init_x{0.0, 0.0, 0.0};
+
+    Eigen::Vector3d pos{reo_structs::concatenateTransform(init_x, edge)};
+    pos = reo_structs::concatenateTransform(pos, edge);
+
+    Eigen::Vector3d truth{1.0, 1.0, PI};
+
+
+    expectNearVec(truth, pos);
+}
+
 class HouseREO: public REO, public ::testing::Test
 {
 public:
@@ -81,3 +102,8 @@ public:
             m_lc_covars.push_back(covar);
     }
 };
+
+//TEST_F(HouseREO, b)
+//{
+
+//}
