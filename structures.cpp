@@ -35,6 +35,25 @@ public:
         return m_xi;
     }
 
+    template<typename T>
+    bool operator()(const T* const zx, const T* const zy, const T* const theta, T* residuals) const
+    {
+        Eigen::Matrix<T, 3, 1> T2;
+        T2(0) = *zx;
+        T2(1) = *zy;
+        T2(2) = *theta;
+
+        Eigen::Matrix<T, 3, 1> trans;
+        trans<<T(0.0), T(0.0), T(0.0);
+
+        trans = concatenateTransform(trans, T2);
+
+        residuals[0] = (T(m_Tx) - T2(0)) * T(m_xi(0, 0));
+        residuals[1]= (T(m_Ty) - T2(1)) * T(m_xi(1, 1));
+        residuals[2] = (T(m_Tphi) - T2(2)) * T(m_xi(2, 2));
+        return true;
+    }
+
 protected:
     double m_Tx, m_Ty, m_Tphi;
     Eigen::Matrix3d m_xi;

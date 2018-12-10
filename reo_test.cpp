@@ -5,7 +5,8 @@
 
 #define PI 3.14159625
 
-void expectNearVec(Eigen::Vector3d v1, Eigen::Vector3d v2)
+template<typename T>
+void expectNearVec(T v1, T v2)
 {
     for(int i{0}; i<3; i++)
         EXPECT_NEAR(v1[i], v2[i], .001);
@@ -122,5 +123,27 @@ public:
 
 TEST_F(HouseREO, AskedForAnEdgeResidual_ReturnsCorrectResidual)
 {
+    double Tx{1.0};
+    double Ty{0.0};
+    double Tphi{PI/2.0};
+
+    Eigen::Vector3d covar{1e3, 1e3,1e2};
+
+    reo_structs::EdgeResidual res(Tx, Ty, Tphi, covar);
+    double zx{this->m_edges[1][0]};
+    double zy{this->m_edges[1][1]};
+    double phi{this->m_edges[1][2]};
+    double* residuals{new double[3]};
+
+    res(&zx, &zy, &phi, residuals);
+    double* truth{new double[3]};
+    truth[0] = -.36461;
+    truth[1] = 0.0;
+    truth[2] = .4143;
+
+    expectNearVec(truth, residuals);
+
+    delete[] truth;
+    delete[] residuals;
 
 }
