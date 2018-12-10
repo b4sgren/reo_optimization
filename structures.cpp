@@ -27,7 +27,7 @@ public:
     EdgeResidual(double Tx, double Ty, double T_phi, Eigen::Vector3d co_var): m_Tx{Tx}, m_Ty{Ty}, m_Tphi{T_phi}
     {
         Eigen::Matrix3d covar{co_var.asDiagonal()};
-        m_xi = covar.llt().matrixL().transpose();
+        m_xi = covar.llt().matrixL().transpose(); // TODO Try to make this a function
     }
 
     Eigen::Matrix3d getXi()
@@ -56,6 +56,42 @@ public:
 
 protected:
     double m_Tx, m_Ty, m_Tphi;
+    Eigen::Matrix3d m_xi;
+};
+
+struct LCResidual
+{
+public:
+    LCResidual(double Tx, double Ty, double T_phi, Eigen::Vector3d co_var, int edge_count): m_Tx{Tx}, m_Ty{Ty}, m_Tphi{T_phi}, m_num_edges{edge_count}
+    {
+        Eigen::Matrix3d temp{co_var.asDiagonal()};
+        m_xi = temp.llt().matrixL().transpose();
+    }
+
+    template<typename T>
+    bool operator()(T const* const* parameters, T* residuals) const
+    {
+        Eigen::Matrix<T, 3, 1> trans;
+        trans << T(0.0), T(0.0), T(0.0);
+        for(int i{0}; i < m_num_edges; i++)
+        {
+            T zx = parameters[3 * i][0];
+            T zy = parameters[3* i + 1][0];
+            T theta = parameters[3 * i + 2][0];
+            Eigen::Matrix<T, 3, 1> temp;
+            temp << zx, zy, theta;
+            trans = concatenateTransform(trans, temp);
+        }
+
+        residuals[0] = (T(m_Tx) - trans(0)) * T(m_xi(0, 0));
+        residuals[1] = (T(m_Ty) - trans(1)) * T(m_xi(1, 1));
+        residuals[2] = (T(m_Tphi) - trans(2)) * T(m_xi(2, 2));
+        return true;
+    }
+
+protected:
+    double m_Tx, m_Ty, m_Tphi;
+    int m_num_edges;
     Eigen::Matrix3d m_xi;
 };
 

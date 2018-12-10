@@ -145,5 +145,42 @@ TEST_F(HouseREO, AskedForAnEdgeResidual_ReturnsCorrectResidual)
 
     delete[] truth;
     delete[] residuals;
+}
 
+TEST_F(HouseREO, AskedForALCResidual_ReturnsCorrectResidual)
+{
+    double Tx{-1.0};
+    double Ty{1.0};
+    double Tphi{-3.0*PI/4.0}; //Measured
+
+    Eigen::Vector3d covar{1e3, 1e3,1e2};
+
+    int from_id{7};
+    int to_id{1};
+
+    reo_structs::LCResidual res(Tx, Ty, Tphi, covar, from_id - to_id);
+    double* residuals{new double[3]};
+
+    double** parameters{new double*[3 * (from_id - to_id)]};
+
+    for(int i{to_id}; i < from_id; i++)
+    {
+        Eigen::Vector3d edge{this->m_edges[i]};
+        parameters[3*(i - to_id)] = new double[1];
+        parameters[3*(i - to_id)][0] = edge[0];
+
+        parameters[3*(i - to_id)+1] = new double[1];
+        parameters[3*(i - to_id)+1][0] = edge[1];
+
+        parameters[3*(i - to_id)+2] = new double[1];
+        parameters[3*(i - to_id)+2][0] = edge[2];
+    }
+
+    res(parameters, residuals);
+    double* truth{new double[3]};
+    truth[0] = -60.3427;
+    truth[1] = 6.1112;
+    truth[2] = 2.0464;
+
+    expectNearVec(truth, residuals);
 }
