@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "reo.h"
 #include "structures.cpp"
+#include <cmath>
 
 #define PI 3.14159625
 
@@ -70,6 +71,22 @@ TEST(TwoEdges, AskedToConcatenate_ReturnsCorrectConcatenation)
     expectNearVec(truth, pos);
 }
 
+TEST(EdgeResidual, PassedInCovarianceMatrix_ConvertsToSquareRootOfCovariance)
+{
+    Eigen::Vector3d covar{1e5, 1e5, 1e3};
+    double Tx{1.0};
+    double Ty{1.0};
+    double Tphi{1.0};
+
+    reo_structs::EdgeResidual res(Tx, Ty, Tphi, covar);
+    Eigen::Matrix3d var{res.getXi()};
+    Eigen::Vector3d sqrt_covar{var(0, 0), var(1, 1), var(2, 2)};
+
+    Eigen::Vector3d truth{sqrt(covar(0)), sqrt(covar(1)), sqrt(covar(2))};
+
+    expectNearVec(truth, sqrt_covar);
+}
+
 class HouseREO: public REO, public ::testing::Test
 {
 public:
@@ -103,7 +120,7 @@ public:
     }
 };
 
-//TEST_F(HouseREO, b)
-//{
+TEST_F(HouseREO, AskedForAnEdgeResidual_ReturnsCorrectResidual)
+{
 
-//}
+}

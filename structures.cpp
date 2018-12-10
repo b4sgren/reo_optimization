@@ -21,4 +21,23 @@ Eigen::Matrix<T, 3, 1> concatenateTransform(Eigen::Matrix<T, 3, 1> T1, Eigen::Ma
     return Eigen::Matrix<T, 3, 1>(x, y, psi);
 }
 
+struct EdgeResidual
+{
+public:
+    EdgeResidual(double Tx, double Ty, double T_phi, Eigen::Vector3d co_var): m_Tx{Tx}, m_Ty{Ty}, m_Tphi{T_phi}
+    {
+        Eigen::Matrix3d covar{co_var.asDiagonal()};
+        m_xi = covar.llt().matrixL().transpose();
+    }
+
+    Eigen::Matrix3d getXi()
+    {
+        return m_xi;
+    }
+
+protected:
+    double m_Tx, m_Ty, m_Tphi;
+    Eigen::Matrix3d m_xi;
+};
+
 }
