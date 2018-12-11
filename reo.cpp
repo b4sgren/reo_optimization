@@ -74,17 +74,6 @@ void REO::setUpOptions()
     m_options.function_tolerance = 1e-15;
 }
 
-Eigen::Vector3d REO::getLCTransform(int from_id, int to_id)
-{
-    Eigen::Vector3d transform{0.0, 0.0, 0.0};
-    for(int i{to_id}; i < from_id; i++)
-    {
-        transform = reo_structs::concatenateTransform(transform, m_edges[i]); //This is wrong. Need to use true edges
-    }
-
-    return transform;
-}
-
 std::vector<double*> REO::setLCParameters(int from_id, int to_id, LC_CostFunction* cost_function)
 {
     std::vector<double*> parameters;

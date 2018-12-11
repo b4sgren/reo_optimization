@@ -26,7 +26,6 @@ protected:
     void setUpLoopClosures();
     void setUpOptions();
 
-    Eigen::Vector3d getLCTransform(int from_id, int to_id);
     std::vector<double*> setLCParameters(int from_id, int to_id, LC_CostFunction* cost_function);
 
     std::vector<Eigen::Vector3d> m_edges;
