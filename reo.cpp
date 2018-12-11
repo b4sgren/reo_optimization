@@ -58,7 +58,7 @@ void REO::setUpLoopClosures()
         LC_CostFunction* cost_function{new LC_CostFunction(new reo_structs::LCResidual(transform(0), transform(1), transform(2), co_var, from_id - to_id))};
         cost_function->SetNumResiduals(3);
 
-        std::vector<double*> parameter_blocks{setLCParameters(from_id, to_id)};
+        std::vector<double*> parameter_blocks{setLCParameters(from_id, to_id, cost_function)};
 
         m_problem.AddResidualBlock(cost_function, NULL, parameter_blocks);
     }
@@ -81,7 +81,7 @@ Eigen::Vector3d REO::getLCTransform(int from_id, int to_id)
     return transform;
 }
 
-std::vector<double*> REO::setLCParameters(int from_id, int to_id)
+std::vector<double*> REO::setLCParameters(int from_id, int to_id, LC_CostFunction* cost_function)
 {
     std::vector<double*> parameters;
     parameters.clear();
@@ -89,10 +89,11 @@ std::vector<double*> REO::setLCParameters(int from_id, int to_id)
     for(int i{to_id}; i < from_id; i++)
     {
         parameters.push_back(&m_edges[i][0]);
-
+        cost_function->AddParameterBlock(1);
         parameters.push_back(&m_edges[i][1]);
-
+        cost_function->AddParameterBlock(1);
         parameters.push_back(&m_edges[i][2]);
+        cost_function->AddParameterBlock(1);
     }
 
     return parameters;

@@ -196,16 +196,16 @@ TEST_F(HouseREO, AskedForLoopClosureTransform_ReturnsCorrectTransform)
     expectNearVec(true_transform, transform);
 }
 
-//TEST_F(HouseREO, AskedIfProblemIsSetUpCorrectly_ReturnsCorrectNumberOfResidualBlocksAndParameters)
-//{
-//    this->setUpOptimization();
+TEST_F(HouseREO, AskedIfProblemIsSetUpCorrectly_ReturnsCorrectNumberOfResidualBlocksAndParameters)
+{
+    this->setUpOptimization();
 
-//    int num_residual_blocks{this->m_problem.NumResidualBlocks()};
-//    int num_parameters{this->m_problem.NumParameters()};
+    int num_residual_blocks{this->m_problem.NumResidualBlocks()};
+    int num_parameters{this->m_problem.NumParameters()};
 
-//    int true_num_res_blocks{13};
-//    int true_num_parameters{8};
+    int true_num_res_blocks{13};
+    int true_num_parameters{24};
 
-//    EXPECT_EQ{true_num_parameters, num_parameters};
-//    EXPECT_EQ{true_num_res_blocks, num_residual_blocks};
-//}
+    EXPECT_EQ(true_num_parameters, num_parameters);
+    EXPECT_EQ(true_num_res_blocks, num_residual_blocks);
+}

@@ -6,6 +6,9 @@
 #include <ceres/ceres.h>
 #include "structures.h"
 
+typedef ceres::DynamicAutoDiffCostFunction<reo_structs::LCResidual> LC_CostFunction;
+typedef ceres::AutoDiffCostFunction<reo_structs::EdgeResidual, 3, 1, 1, 1> Odom_CostFunction;
+
 class REO
 {
 public:
@@ -22,7 +25,7 @@ protected:
     void setUpOptions();
 
     Eigen::Vector3d getLCTransform(int from_id, int to_id);
-    std::vector<double*> setLCParameters(int from_id, int to_id);
+    std::vector<double*> setLCParameters(int from_id, int to_id, LC_CostFunction* cost_function);
 
     std::vector<Eigen::Vector3d> m_edges;
     std::vector<Eigen::Vector3d> m_edge_covars;
