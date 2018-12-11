@@ -8,6 +8,18 @@ namespace reo_structs
 double const PI{3.14159625};
 
 template<typename T>
+Eigen::Matrix<T, 3, 1> invertTransform(Eigen::Matrix<T, 3, 1> T1)
+{
+    T cs{cos(T1[2])};
+    T ss{sin(T1[2])};
+
+    T dx{-(T1[0] * cs + T1[1] * ss)};
+    T dy{-(-T1[0] * ss + T1[1] * cs)};
+
+    return Eigen::Matrix<T, 3, 1>{dx, dy, -T1[2]};
+}
+
+template<typename T>
 Eigen::Matrix<T, 3, 1> concatenateTransform(Eigen::Matrix<T, 3, 1> T1, Eigen::Matrix<T, 3, 1> T2)
 {
     T cs = cos(T1(2));

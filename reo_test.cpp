@@ -30,7 +30,10 @@ TEST(VectorOfEdgesLoopClosuresAndCovariance, AskedIfInformationIsCorrect_Returns
     lc_covar << 1e-3, 1e-3, 1e-1;
     std::vector<Eigen::Vector3d> lc_covars{lc_covar};
 
-    REO optimizer{edges, lcs, edge_covars, lc_covars};
+    Eigen::Vector3d lc_edge{1.0, 1.0, 1.0};
+    std::vector<Eigen::Vector3d> lc_edges{lc_edge};
+
+    REO optimizer{edges, lcs, edge_covars, lc_covars, lc_edges};
 
     EXPECT_TRUE(optimizer.canSolve());
 }
@@ -53,7 +56,10 @@ TEST(REOWithDifferentVectorLengths, AskedIfSolvable_ReturnsFalse)
     lc_covar << 1e-2, 1e-2, 1e-2;
     std::vector<Eigen::Vector3d> lc_covars{lc_covar};
 
-    REO optimizer{edges, lcs, edge_covars, lc_covars};
+    Eigen::Vector3d lc_edge{1.0, 1.0, 1.0};
+    std::vector<Eigen::Vector3d> lc_edges{lc_edge};
+
+    REO optimizer{edges, lcs, edge_covars, lc_covars, lc_edges};
 
     EXPECT_FALSE(optimizer.canSolve());
 }
@@ -88,6 +94,16 @@ TEST(EdgeResidual, PassedInCovarianceMatrix_ConvertsToSquareRootOfCovariance)
     expectNearVec(truth, sqrt_covar);
 }
 
+TEST(Transform, AskedToInvertTransform_ReturnsCorrectInversion)
+{
+    Eigen::Vector3d transform(1.5, -2.0, PI/2.0);
+    Eigen::Vector3d inv_transform{reo_structs::invertTransform(transform)};
+
+    Eigen::Vector3d true_inverse{2.0, 1.5, -PI/2.0};
+
+    expectNearVec(true_inverse, inv_transform);
+}
+
 class HouseREO: public REO, public ::testing::Test
 {
 public:
@@ -112,7 +128,15 @@ public:
         std::vector<Eigen::Vector2i> lcs{lc1, lc2, lc3, lc4, lc5};
         m_lcs = lcs;
 
-        Eigen::Vector3d covar{1e-3, 1e-3, 1e-2};
+        Eigen::Vector3d lc_edge1{0.0, 0.0, .78539};
+        Eigen::Vector3d lc_edge2{0.0, 0.0, -.78539};
+        Eigen::Vector3d lc_edge3{1.0, 1.0, -2.35619};
+        Eigen::Vector3d lc_edge4{1.0, 1.0, .78539};
+        Eigen::Vector3d lc_edge5{.5, 1.5, -2.35619};
+        std::vector<Eigen::Vector3d> lc_edges{lc_edge1, lc_edge2, lc_edge3, lc_edge4, lc_edge5};
+        m_lc_edges = lc_edges;
+
+        Eigen::Vector3d covar{1e-4, 1e-4, 1e-2};
         for(int i{0}; i < edges.size(); i++)
             m_edge_covars.push_back(covar);
 

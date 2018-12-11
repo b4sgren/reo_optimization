@@ -1,6 +1,7 @@
 #include "reo.h"
 #include "structures.h"
 #include <ceres/ceres.h>
+#include <cmath>
 
 typedef ceres::DynamicAutoDiffCostFunction<reo_structs::LCResidual> LC_CostFunction;
 typedef ceres::AutoDiffCostFunction<reo_structs::EdgeResidual, 3, 1, 1, 1> Odom_CostFunction;
@@ -8,12 +9,14 @@ typedef ceres::AutoDiffCostFunction<reo_structs::EdgeResidual, 3, 1, 1, 1> Odom_
 REO::REO(){}
 
 REO::REO(std::vector<Eigen::Vector3d> edges, std::vector<Eigen::Vector2i> lcs,
-         std::vector<Eigen::Vector3d> edge_covars, std::vector<Eigen::Vector3d> lc_covars)
+         std::vector<Eigen::Vector3d> edge_covars, std::vector<Eigen::Vector3d> lc_covars,
+         std::vector<Eigen::Vector3d> lc_edges)
 {
     m_edges = edges;
     m_lcs = lcs;
     m_edge_covars = edge_covars;
     m_lc_covars = lc_covars;
+    m_lc_edges = lc_edges;
 }
 
 bool REO::canSolve()
@@ -54,9 +57,9 @@ void REO::setUpLoopClosures()
         int from_id{m_lcs[i](0)};
         int to_id{m_lcs[i](1)};
         Eigen::Vector3d co_var{m_lc_covars[i]};
-        Eigen::Vector3d transform{getLCTransform(from_id, to_id)};
+        Eigen::Vector3d transform{m_lc_edges[i]};
 
-        LC_CostFunction* cost_function{new LC_CostFunction(new reo_structs::LCResidual(transform(0), transform(1), transform(2), co_var, from_id - to_id))};
+        LC_CostFunction* cost_function{new LC_CostFunction(new reo_structs::LCResidual(transform(0), transform(1), transform(2), co_var, abs(from_id - to_id)))};
         cost_function->SetNumResiduals(3);
 
         std::vector<double*> parameter_blocks{setLCParameters(from_id, to_id, cost_function)};
@@ -76,7 +79,7 @@ Eigen::Vector3d REO::getLCTransform(int from_id, int to_id)
     Eigen::Vector3d transform{0.0, 0.0, 0.0};
     for(int i{to_id}; i < from_id; i++)
     {
-        transform = reo_structs::concatenateTransform(transform, m_edges[i]);
+        transform = reo_structs::concatenateTransform(transform, m_edges[i]); //This is wrong. Need to use true edges
     }
 
     return transform;
@@ -86,6 +89,13 @@ std::vector<double*> REO::setLCParameters(int from_id, int to_id, LC_CostFunctio
 {
     std::vector<double*> parameters;
     parameters.clear();
+
+    if(from_id < to_id)
+    {
+        int temp = to_id;
+        to_id = from_id;
+        from_id = temp;
+    }
 
     for(int i{to_id}; i < from_id; i++)
     {
