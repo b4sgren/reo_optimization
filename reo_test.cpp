@@ -30,7 +30,8 @@ TEST(VectorOfEdgesLoopClosuresAndCovariance, AskedIfInformationIsCorrect_Returns
     lc_covar << 1e-3, 1e-3, 1e-1;
     std::vector<Eigen::Vector3d> lc_covars{lc_covar};
 
-    REO optimizer = REO(edges, lcs, edge_covars, lc_covars);
+//    REO optimizer = REO(edges, lcs, edge_covars, lc_covars);
+    REO optimizer{edges, lcs, edge_covars, lc_covars};
 
     EXPECT_TRUE(optimizer.canSolve());
 }
@@ -53,7 +54,7 @@ TEST(REOWithDifferentVectorLengths, AskedIfSolvable_ReturnsFalse)
     lc_covar << 1e-2, 1e-2, 1e-2;
     std::vector<Eigen::Vector3d> lc_covars{lc_covar};
 
-    REO optimizer = REO(edges, lcs, edge_covars, lc_covars);
+    REO optimizer{edges, lcs, edge_covars, lc_covars};
 
     EXPECT_FALSE(optimizer.canSolve());
 }
@@ -151,7 +152,7 @@ TEST_F(HouseREO, AskedForALCResidual_ReturnsCorrectResidual)
 {
     double Tx{-1.0};
     double Ty{1.0};
-    double Tphi{-3.0*PI/4.0}; //Measured
+    double Tphi{-3.0*PI/4.0};
 
     Eigen::Vector3d covar{1e3, 1e3,1e2};
 
@@ -184,3 +185,28 @@ TEST_F(HouseREO, AskedForALCResidual_ReturnsCorrectResidual)
 
     expectNearVec(truth, residuals);
 }
+
+TEST_F(HouseREO, AskedForLoopClosureTransform_ReturnsCorrectTransform)
+{
+    int from_id(7);
+    int to_id(1);
+    Eigen::Vector3d transform{this->getLCTransform(from_id, to_id)};
+
+    Eigen::Vector3d true_transform{0.9082, 0.8067, -2.5608};
+
+    expectNearVec(true_transform, transform);
+}
+
+//TEST_F(HouseREO, AskedIfProblemIsSetUpCorrectly_ReturnsCorrectNumberOfResidualBlocksAndParameters)
+//{
+//    this->setUpOptimization();
+
+//    int num_residual_blocks{this->m_problem.NumResidualBlocks()};
+//    int num_parameters{this->m_problem.NumParameters()};
+
+//    int true_num_res_blocks{13};
+//    int true_num_parameters{8};
+
+//    EXPECT_EQ{true_num_parameters, num_parameters};
+//    EXPECT_EQ{true_num_res_blocks, num_residual_blocks};
+//}
