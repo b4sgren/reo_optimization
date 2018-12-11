@@ -1,5 +1,5 @@
 #include "reo.h"
-#include "structures.cpp"
+#include "structures.h"
 
 typedef ceres::DynamicAutoDiffCostFunction<reo_structs::LCResidual> LC_CostFunction;
 typedef ceres::AutoDiffCostFunction<reo_structs::EdgeResidual, 3, 1, 1, 1> Odom_CostFunction;

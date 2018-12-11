@@ -4,6 +4,7 @@
 #include <Eigen/Dense>
 #include <vector>
 #include <ceres/ceres.h>
+#include "structures.h"
 
 class REO
 {

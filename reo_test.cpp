@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "reo.h"
-#include "structures.cpp"
+#include "structures.h"
 #include <cmath>
 
 #define PI 3.14159625
@@ -30,7 +30,6 @@ TEST(VectorOfEdgesLoopClosuresAndCovariance, AskedIfInformationIsCorrect_Returns
     lc_covar << 1e-3, 1e-3, 1e-1;
     std::vector<Eigen::Vector3d> lc_covars{lc_covar};
 
-//    REO optimizer = REO(edges, lcs, edge_covars, lc_covars);
     REO optimizer{edges, lcs, edge_covars, lc_covars};
 
     EXPECT_TRUE(optimizer.canSolve());

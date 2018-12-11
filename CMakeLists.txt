@@ -21,7 +21,6 @@ ENDIF()
 add_library(OPTIMIZATION STATIC
     reo.h
     reo.cpp
-    structures.cpp
     structures.h
     )
 
