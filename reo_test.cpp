@@ -241,5 +241,5 @@ TEST_F(HouseREO, AskedForOptimizedEdges_ReturnsCorrectWithinTolerance)
     for(int i{0}; i<true_edges.size(); i++)
         for(int j{0}; j< 3; j++)
             EXPECT_NEAR(true_edges[i][j], opt_edges[i][j], .15);
-//        expectNearVec(true_edges[i], opt_edges[i]); //The test fails but I believe that it is working. Do new threshold (.05?)
+//        expectNearVec(true_edges[i], opt_edges[i]); //The test fails but I believe that it is working. Do new threshold (.05?) do adaptive for theta?
 }
