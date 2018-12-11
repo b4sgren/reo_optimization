@@ -18,6 +18,7 @@ public:
 
     bool canSolve();
     void setUpOptimization();
+    std::vector<Eigen::Vector3d> solveOptimization();
 
 protected:
     void setUpOdometry();

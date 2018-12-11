@@ -209,3 +209,22 @@ TEST_F(HouseREO, AskedIfProblemIsSetUpCorrectly_ReturnsCorrectNumberOfResidualBl
     EXPECT_EQ(true_num_parameters, num_parameters);
     EXPECT_EQ(true_num_res_blocks, num_residual_blocks);
 }
+
+TEST_F(HouseREO, AskedForOptimizedEdges_ReturnsCorrectWithinTolerance)
+{
+    this->setUpOptimization();
+    std::vector<Eigen::Vector3d> opt_edges{this->solveOptimization()};
+
+    Eigen::Vector3d edge1{1.0, 0.0, 1.570798};
+    Eigen::Vector3d edge2{1.0, 0.0, 1.570798};
+    Eigen::Vector3d edge3{1.0, 0.0, 1.570798};
+    Eigen::Vector3d edge4{1.0, 0.0, 2.356194};
+    Eigen::Vector3d edge5{sqrt(2.0), 0.0, 1.570798};
+    Eigen::Vector3d edge6{sqrt(2.0)/2.0, 0.0, 1.570798};
+    Eigen::Vector3d edge7{sqrt(2.0)/2.0, 0.0, 1.570798};
+    Eigen::Vector3d edge8{sqrt(2.0), 0.0, 0.0};
+    std::vector<Eigen::Vector3d> true_edges{edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8};
+
+    for(int i{0}; i<true_edges.size(); i++)
+        expectNearVec(true_edges[i], opt_edges[i]);
+}

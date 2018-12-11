@@ -10,7 +10,7 @@ find_package(Ceres REQUIRED)
 
 include_directories(include
     ${CERES_INCLUDE_DIRS}
-    ${EIGEN3_INCLUDE_DIRW}
+    ${EIGEN3_INCLUDE_DIRS}
     )
 
 IF(NOT TARGET gtest)
@@ -25,4 +25,4 @@ add_library(OPTIMIZATION STATIC
     )
 
 add_executable(reo_test reo_test.cpp)
-target_link_libraries(reo_test gtest gtest_main ${CERES_LIBRARIES} OPTIMIZATION)
+target_link_libraries(reo_test gtest gtest_main OPTIMIZATION ${CERES_LIBRARIES})

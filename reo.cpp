@@ -1,5 +1,6 @@
 #include "reo.h"
 #include "structures.h"
+#include <ceres/ceres.h>
 
 typedef ceres::DynamicAutoDiffCostFunction<reo_structs::LCResidual> LC_CostFunction;
 typedef ceres::AutoDiffCostFunction<reo_structs::EdgeResidual, 3, 1, 1, 1> Odom_CostFunction;
@@ -97,4 +98,18 @@ std::vector<double*> REO::setLCParameters(int from_id, int to_id, LC_CostFunctio
     }
 
     return parameters;
+}
+
+std::vector<Eigen::Vector3d> REO::solveOptimization()
+{
+    ceres::Solver::Summary summary;
+    ceres::Solve(m_options, &m_problem, &summary);
+
+    std::vector<Eigen::Vector3d> opt_edges;
+    opt_edges.clear();
+
+    for(int i{0}; i < m_edges.size(); i++)
+        opt_edges.push_back(m_edges[i]);
+
+    return opt_edges;
 }
