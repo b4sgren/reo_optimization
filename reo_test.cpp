@@ -239,7 +239,10 @@ TEST_F(HouseREO, AskedForOptimizedEdges_ReturnsCorrectWithinTolerance)
     std::vector<Eigen::Vector3d> true_edges{edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8};
 
     for(int i{0}; i<true_edges.size(); i++)
-        for(int j{0}; j< 3; j++)
-            EXPECT_NEAR(true_edges[i][j], opt_edges[i][j], .15);
+    {
+        for(int j{0}; j< 2; j++)
+            EXPECT_NEAR(true_edges[i][j], opt_edges[i][j], .075);
+        EXPECT_NEAR(true_edges[i][2], opt_edges[i][2], .12);
+    }
 //        expectNearVec(true_edges[i], opt_edges[i]); //The test fails but I believe that it is working. Do new threshold (.05?) do adaptive for theta?
 }
