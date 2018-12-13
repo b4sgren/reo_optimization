@@ -251,13 +251,15 @@ TEST_F(HouseREO, AskedForOptimizedEdges_ReturnsCorrectWithinTolerance)
 TEST(Filename, AskedToReadInFileToOptimize_ReadsCorrectValues)
 {
     std::string filename{"../reo_optimization/test_file.txt"};
+    REO optimizer(filename);
 
-    std::vector<Eigen::Vector3d> edges, edge_covars, lc_edges, lc_covars;
-    std::vector<Eigen::Vector2i> lcs;
+    std::vector<Eigen::Vector3d> edges{optimizer.getEdges()};
+    std::vector<Eigen::Vector3d> edge_covars{optimizer.getEdgeCovar()};
+    std::vector<Eigen::Vector3d> lc_edges{optimizer.getLCEdges()};
+    std::vector<Eigen::Vector3d> lc_covars{optimizer.getLCCovars()};
+    std::vector<Eigen::Vector2i> lcs{optimizer.getLCS()};
 
-    reo_structs::readFile(filename, edges, edge_covars, lc_edges, lc_covars, lcs);
-
-    Eigen::Vector3d edge{1.0, 1.0, 1.5708};
+    Eigen::Vector3d edge{1.0, 0.0, 1.5708};
     Eigen::Vector3d covar{.001, .001, .1};
     Eigen::Vector3d lc_edge{.025, .13, .25};
     Eigen::Vector2i lc{4, 0};

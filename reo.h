@@ -16,15 +16,23 @@ public:
     REO(std::vector<Eigen::Vector3d> edges, std::vector<Eigen::Vector2i> lcs,
         std::vector<Eigen::Vector3d> edge_covars, std::vector<Eigen::Vector3d> lc_covars,
         std::vector<Eigen::Vector3d> lc_edges);
+    REO(std::string filename);
 
     bool canSolve();
     void setUpOptimization();
     std::vector<Eigen::Vector3d> solveOptimization();
 
+    std::vector<Eigen::Vector3d> getEdges() const;
+    std::vector<Eigen::Vector3d> getEdgeCovar() const;
+    std::vector<Eigen::Vector3d> getLCEdges() const;
+    std::vector<Eigen::Vector3d> getLCCovars() const;
+    std::vector<Eigen::Vector2i> getLCS() const;
+
 protected:
     void setUpOdometry();
     void setUpLoopClosures();
     void setUpOptions();
+    void readFile(std::string filename);
 
     std::vector<double*> setLCParameters(int from_id, int to_id, LC_CostFunction* cost_function);
 

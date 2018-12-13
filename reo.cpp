@@ -1,7 +1,9 @@
 #include "reo.h"
 #include "structures.h"
+
 #include <ceres/ceres.h>
 #include <cmath>
+#include <fstream>
 
 typedef ceres::DynamicAutoDiffCostFunction<reo_structs::LCResidual> LC_CostFunction;
 typedef ceres::AutoDiffCostFunction<reo_structs::EdgeResidual, 3, 1, 1, 1> Odom_CostFunction;
@@ -17,6 +19,11 @@ REO::REO(std::vector<Eigen::Vector3d> edges, std::vector<Eigen::Vector2i> lcs,
     m_edge_covars = edge_covars;
     m_lc_covars = lc_covars;
     m_lc_edges = lc_edges;
+}
+
+REO::REO(std::string filename)
+{
+    readFile(filename);
 }
 
 bool REO::canSolve()
@@ -68,6 +75,33 @@ void REO::setUpLoopClosures()
     }
 }
 
+void REO::readFile(std::string filename)
+{
+    std::ifstream fin{filename};
+
+    if(!fin.fail())
+    {
+        int from_id, to_id;
+        double x, y, phi, covar_x, covar_y, covar_p;
+
+        while(fin >> from_id >> to_id >> x >> y >> phi >> covar_x >> covar_y >> covar_p)
+        {
+            if(to_id - from_id == 1)
+            {
+                m_edges.push_back(Eigen::Vector3d{x, y, phi});
+                m_edge_covars.push_back(Eigen::Vector3d{covar_x, covar_y, covar_p});
+            }
+            else
+            {
+                m_lc_edges.push_back(Eigen::Vector3d{x, y, phi});
+                m_lc_covars.push_back(Eigen::Vector3d{covar_x, covar_y, covar_p});
+                m_lcs.push_back(Eigen::Vector2i{from_id, to_id});
+            }
+        }
+    }
+    fin.close();
+}
+
 void REO::setUpOptions()
 {
     m_options.linear_solver_type = ceres::SPARSE_NORMAL_CHOLESKY;
@@ -111,4 +145,29 @@ std::vector<Eigen::Vector3d> REO::solveOptimization()
         opt_edges.push_back(m_edges[i]);
 
     return opt_edges;
+}
+
+std::vector<Eigen::Vector3d> REO::getEdges() const
+{
+    return m_edges;
+}
+
+std::vector<Eigen::Vector3d> REO::getEdgeCovar() const
+{
+    return m_edge_covars;
+}
+
+std::vector<Eigen::Vector3d> REO::getLCEdges() const
+{
+    return m_lc_edges;
+}
+
+std::vector<Eigen::Vector3d> REO::getLCCovars() const
+{
+    return m_lc_covars;
+}
+
+std::vector<Eigen::Vector2i> REO::getLCS() const
+{
+    return m_lcs;
 }
