@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
+#include <cmath>
+#include <fstream>
+
 #include "reo.h"
 #include "structures.h"
-#include <cmath>
 
 #define PI 3.14159625
 
@@ -244,5 +246,38 @@ TEST_F(HouseREO, AskedForOptimizedEdges_ReturnsCorrectWithinTolerance)
             EXPECT_NEAR(true_edges[i][j], opt_edges[i][j], .075);
         EXPECT_NEAR(true_edges[i][2], opt_edges[i][2], .12);
     }
-//        expectNearVec(true_edges[i], opt_edges[i]); //The test fails but I believe that it is working. Do new threshold (.05?) do adaptive for theta?
+}
+
+TEST(Filename, AskedToReadInFileToOptimize_ReadsCorrectValues)
+{
+    std::string filename{"../reo_optimization/test_file.txt"};
+
+    std::vector<Eigen::Vector3d> edges, edge_covars, lc_edges, lc_covars;
+    std::vector<Eigen::Vector2i> lcs;
+
+    reo_structs::readFile(filename, edges, edge_covars, lc_edges, lc_covars, lcs);
+
+    Eigen::Vector3d edge{1.0, 1.0, 1.5708};
+    Eigen::Vector3d covar{.001, .001, .1};
+    Eigen::Vector3d lc_edge{.025, .13, .25};
+    Eigen::Vector2i lc{4, 0};
+
+    std::vector<Eigen::Vector3d> t_edges{edge, edge, edge, edge};
+    std::vector<Eigen::Vector3d> t_edge_covars{covar, covar, covar, covar};
+    std::vector<Eigen::Vector3d> t_lc_edges{lc_edge};
+    std::vector<Eigen::Vector3d> t_lc_covars{covar};
+    std::vector<Eigen::Vector2i> t_lcs{lc};
+
+    for(int i{0}; i<t_edges.size(); i++)
+    {
+        EXPECT_EQ(t_edges[i], edges[i]);
+        EXPECT_EQ(t_edge_covars[i], edge_covars[i]);
+    }
+
+    for(int i{0}; i < t_lcs.size(); i++)
+    {
+        EXPECT_EQ(t_lc_edges[i], lc_edges[i]);
+        EXPECT_EQ(t_lc_covars[i], lc_covars[i]);
+        EXPECT_EQ(t_lcs[i], lcs[i]);
+    }
 }
