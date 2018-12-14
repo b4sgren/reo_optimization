@@ -43,7 +43,7 @@ public:
     EdgeResidual(double Tx, double Ty, double T_phi, Eigen::Vector3d co_var): m_Tx{Tx}, m_Ty{Ty}, m_Tphi{T_phi}
     {
         Eigen::Matrix3d covar{co_var.asDiagonal()};
-        m_xi = covar.llt().matrixL().transpose(); // TODO Try to make this a function
+        m_xi = covar.llt().matrixL().transpose();
     }
 
     Eigen::Matrix3d getXi()
@@ -99,6 +99,7 @@ public:
             temp << zx, zy, theta;
             trans = concatenateTransform(trans, temp);
         }
+        trans = invertTransform(trans);
 
         residuals[0] = (T(m_Tx) - trans(0)) * T(m_xi(0, 0));
         residuals[1] = (T(m_Ty) - trans(1)) * T(m_xi(1, 1));
