@@ -99,7 +99,6 @@ public:
             temp << zx, zy, theta;
             trans = concatenateTransform(trans, temp);
         }
-        trans = invertTransform(trans);
 
         residuals[0] = (T(m_Tx) - trans(0)) * T(m_xi(0, 0));
         residuals[1] = (T(m_Ty) - trans(1)) * T(m_xi(1, 1));
