@@ -250,7 +250,7 @@ TEST_F(HouseREO, AskedForOptimizedEdges_ReturnsCorrectWithinTolerance)
 
 TEST(Filename, AskedToReadInFileToOptimize_ReadsCorrectValues)
 {
-    std::string filename{"../reo_optimization/test_file.txt"};
+    std::string filename{"../../../final-project-b4sgren/libs/reo_optimization/test_file.txt"};
     REO optimizer(filename);
 
     std::vector<Eigen::Vector3d> edges{optimizer.getEdges()};
