@@ -64,9 +64,13 @@ public:
 
         trans = concatenateTransform(trans, T2);
 
-        residuals[0] = (T(m_Tx) - T2(0)) * T(m_xi(0, 0));
-        residuals[1]= (T(m_Ty) - T2(1)) * T(m_xi(1, 1));
-        residuals[2] = (T(m_Tphi) - T2(2)) * T(m_xi(2, 2));
+        Eigen::Matrix<T, 3, 3> xi;
+        xi << T(m_xi(0, 0)), T(m_xi(0, 1)), T(m_xi(0, 2)), T(m_xi(1, 0)), T(m_xi(1, 1)), T(m_xi(1, 2)), T(m_xi(2, 0)), T(m_xi(2, 1)), T(m_xi(2, 2));
+        Eigen::Matrix<T, 3, 1> T0;
+        T0 << T(m_Tx), T(m_Ty), T(m_Tphi);
+
+        Eigen::Map<Eigen::Matrix<T, 3, 1>> res(residuals);
+        res = xi * (T0 - trans);
         return true;
     }
 
@@ -100,9 +104,13 @@ public:
             trans = concatenateTransform(trans, temp);
         }
 
-        residuals[0] = (T(m_Tx) - trans(0)) * T(m_xi(0, 0));
-        residuals[1] = (T(m_Ty) - trans(1)) * T(m_xi(1, 1));
-        residuals[2] = (T(m_Tphi) - trans(2)) * T(m_xi(2, 2));
+        Eigen::Matrix<T, 3, 3> xi;
+        xi << T(m_xi(0, 0)), T(m_xi(0, 1)), T(m_xi(0, 2)), T(m_xi(1, 0)), T(m_xi(1, 1)), T(m_xi(1, 2)), T(m_xi(2, 0)), T(m_xi(2, 1)), T(m_xi(2, 2));
+        Eigen::Matrix<T, 3, 1> T0;
+        T0 << T(m_Tx), T(m_Ty), T(m_Tphi);
+
+        Eigen::Map<Eigen::Matrix<T, 3, 1>> res(residuals);
+        res = xi * (T0 - trans);
         return true;
     }
 
