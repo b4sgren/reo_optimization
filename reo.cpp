@@ -11,7 +11,7 @@ typedef ceres::AutoDiffCostFunction<reo_structs::EdgeResidual, 3, 1, 1, 1> Odom_
 REO::REO(){}
 
 REO::REO(std::vector<Eigen::Vector3d> edges, std::vector<Eigen::Vector2i> lcs,
-         std::vector<Eigen::Vector3d> edge_covars, std::vector<Eigen::Vector3d> lc_covars,
+         std::vector<Eigen::Matrix3d> edge_covars, std::vector<Eigen::Matrix3d> lc_covars,
          std::vector<Eigen::Vector3d> lc_edges)
 {
     m_edges = edges;
@@ -49,7 +49,7 @@ void REO::setUpOdometry()
 {
     for(int i{0}; i<m_edges.size(); i++)
     {
-        Eigen::Vector3d co_var{m_edge_covars[i]};
+        Eigen::Matrix3d co_var{m_edge_covars[i]};
         Eigen::Vector3d transform{m_edges[i]};
 
         Odom_CostFunction* cost_function{new Odom_CostFunction{new reo_structs::EdgeResidual(transform(0), transform(1), transform(2), co_var)}};
@@ -63,7 +63,7 @@ void REO::setUpLoopClosures()
     {
         int from_id{m_lcs[i](0)};
         int to_id{m_lcs[i](1)};
-        Eigen::Vector3d co_var{m_lc_covars[i]};
+        Eigen::Matrix3d co_var{m_lc_covars[i]};
         Eigen::Vector3d transform{m_lc_edges[i]};
 
         LC_CostFunction* cost_function{new LC_CostFunction(new reo_structs::LCResidual(transform(0), transform(1), transform(2), co_var, abs(from_id - to_id)))};
@@ -89,12 +89,16 @@ void REO::readFile(std::string filename)
             if(to_id - from_id == 1)
             {
                 m_edges.push_back(Eigen::Vector3d{x, y, phi});
-                m_edge_covars.push_back(Eigen::Vector3d{covar_x, covar_y, covar_p});
+                Eigen::Matrix3d temp_covar;
+                temp_covar << covar_x, 0, 0, 0, covar_y, 0, 0, 0, covar_p;
+                m_edge_covars.push_back(temp_covar);
             }
             else
             {
                 m_lc_edges.push_back(Eigen::Vector3d{x, y, phi});
-                m_lc_covars.push_back(Eigen::Vector3d{covar_x, covar_y, covar_p});
+                Eigen::Matrix3d temp_covar;
+                temp_covar << covar_x, 0, 0, 0, covar_y, 0, 0, 0, covar_p;
+                m_lc_covars.push_back(temp_covar);
                 m_lcs.push_back(Eigen::Vector2i{from_id, to_id});
             }
         }
@@ -152,7 +156,7 @@ std::vector<Eigen::Vector3d> REO::getEdges() const
     return m_edges;
 }
 
-std::vector<Eigen::Vector3d> REO::getEdgeCovar() const
+std::vector<Eigen::Matrix3d> REO::getEdgeCovar() const
 {
     return m_edge_covars;
 }
@@ -162,7 +166,7 @@ std::vector<Eigen::Vector3d> REO::getLCEdges() const
     return m_lc_edges;
 }
 
-std::vector<Eigen::Vector3d> REO::getLCCovars() const
+std::vector<Eigen::Matrix3d> REO::getLCCovars() const
 {
     return m_lc_covars;
 }
