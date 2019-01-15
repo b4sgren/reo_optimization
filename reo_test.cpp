@@ -99,82 +99,85 @@ TEST(EdgeResidual, PassedInCovarianceMatrix_ConvertsToSquareRootOfCovariance)
             EXPECT_NEAR(var(i, j), truth(i, j), .001);
 }
 
-//TEST(Transform, AskedToInvertTransform_ReturnsCorrectInversion)
-//{
-//    Eigen::Vector3d transform(1.5, -2.0, PI/2.0);
-//    Eigen::Vector3d inv_transform{reo_structs::invertTransform(transform)};
+TEST(Transform, AskedToInvertTransform_ReturnsCorrectInversion)
+{
+    Eigen::Vector3d transform(1.5, -2.0, PI/2.0);
+    Eigen::Vector3d inv_transform{reo_structs::invertTransform(transform)};
 
-//    Eigen::Vector3d true_inverse{2.0, 1.5, -PI/2.0};
+    Eigen::Vector3d true_inverse{2.0, 1.5, -PI/2.0};
 
-//    expectNearVec(true_inverse, inv_transform);
-//}
+    expectNearVec(true_inverse, inv_transform);
+}
 
-//class HouseREO: public REO, public ::testing::Test
-//{
-//public:
-//    HouseREO()
-//    {
-//        Eigen::Vector3d edge1{1.0, 0.0, 1.570798};
-//        Eigen::Vector3d edge2{1.01153, 0.0, 1.529368};
-//        Eigen::Vector3d edge3{0.98064, 0.0, 1.599686};
-//        Eigen::Vector3d edge4{1.03755, 0.0, 2.18385};
-//        Eigen::Vector3d edge5{1.41222, 0.0, 1.65611};
-//        Eigen::Vector3d edge6{0.67212, 0.0, 1.539428};
-//        Eigen::Vector3d edge7{0.69755, 0.0, 1.49709};
-//        Eigen::Vector3d edge8{1.45754, 0.0, 0.0};
-//        std::vector<Eigen::Vector3d> edges{edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8};
-//        m_edges = edges;
+class HouseREO: public REO, public ::testing::Test
+{
+public:
+    HouseREO()
+    {
+        Eigen::Vector3d edge1{1.0, 0.0, 1.570798};
+        Eigen::Vector3d edge2{1.01153, 0.0, 1.529368};
+        Eigen::Vector3d edge3{0.98064, 0.0, 1.599686};
+        Eigen::Vector3d edge4{1.03755, 0.0, 2.18385};
+        Eigen::Vector3d edge5{1.41222, 0.0, 1.65611};
+        Eigen::Vector3d edge6{0.67212, 0.0, 1.539428};
+        Eigen::Vector3d edge7{0.69755, 0.0, 1.49709};
+        Eigen::Vector3d edge8{1.45754, 0.0, 0.0};
+        std::vector<Eigen::Vector3d> edges{edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8};
+        m_edges = edges;
 
-//        Eigen::Vector2i lc1{0, 4};
-//        Eigen::Vector2i lc2{2, 5};
-//        Eigen::Vector2i lc3{1, 7};
-//        Eigen::Vector2i lc4{3, 8};
-//        Eigen::Vector2i lc5{0, 6};
-//        std::vector<Eigen::Vector2i> lcs{lc1, lc2, lc3, lc4, lc5};
-//        m_lcs = lcs;
+        Eigen::Vector2i lc1{0, 4};
+        Eigen::Vector2i lc2{2, 5};
+        Eigen::Vector2i lc3{1, 7};
+        Eigen::Vector2i lc4{3, 8};
+        Eigen::Vector2i lc5{0, 6};
+        std::vector<Eigen::Vector2i> lcs{lc1, lc2, lc3, lc4, lc5};
+        m_lcs = lcs;
 
-//        Eigen::Vector3d lc_edge1{0.0, 0.0, .78539};
-//        Eigen::Vector3d lc_edge2{0.0, 0.0, -.78539};
-//        Eigen::Vector3d lc_edge3{1.0, 1.0, -2.35619};
-//        Eigen::Vector3d lc_edge4{1.0, 1.0, .78539};
-//        Eigen::Vector3d lc_edge5{.5, 1.5, -2.35619};
-//        std::vector<Eigen::Vector3d> lc_edges{lc_edge1, lc_edge2, lc_edge3, lc_edge4, lc_edge5};
-//        m_lc_edges = lc_edges;
+        Eigen::Vector3d lc_edge1{0.0, 0.0, .78539};
+        Eigen::Vector3d lc_edge2{0.0, 0.0, -.78539};
+        Eigen::Vector3d lc_edge3{1.0, 1.0, -2.35619};
+        Eigen::Vector3d lc_edge4{1.0, 1.0, .78539};
+        Eigen::Vector3d lc_edge5{.5, 1.5, -2.35619};
+        std::vector<Eigen::Vector3d> lc_edges{lc_edge1, lc_edge2, lc_edge3, lc_edge4, lc_edge5};
+        m_lc_edges = lc_edges;
 
-//        Eigen::Vector3d covar{1e-4, 1e-4, 1e-2};
-//        for(int i{0}; i < edges.size(); i++)
-//            m_edge_covars.push_back(covar);
+        Eigen::Matrix3d covar;
+        covar << 1e-4, 0, 0, 0, 1e-4, 0, 0, 0, 1e-2;
 
-//        for(int i{0}; i < lcs.size(); i++)
-//            m_lc_covars.push_back(covar);
-//    }
-//};
+        for(int i{0}; i < edges.size(); i++)
+            m_edge_covars.push_back(covar);
 
-//TEST_F(HouseREO, AskedForAnEdgeResidual_ReturnsCorrectResidual)
-//{
-//    double Tx{1.0};
-//    double Ty{0.0};
-//    double Tphi{PI/2.0};
+        for(int i{0}; i < lcs.size(); i++)
+            m_lc_covars.push_back(covar);
+    }
+};
 
-//    Eigen::Vector3d covar{1e3, 1e3,1e2};
+TEST_F(HouseREO, AskedForAnEdgeResidual_ReturnsCorrectResidual)
+{
+    double Tx{1.0};
+    double Ty{0.0};
+    double Tphi{PI/2.0};
 
-//    reo_structs::EdgeResidual res(Tx, Ty, Tphi, covar);
-//    double zx{this->m_edges[1][0]};
-//    double zy{this->m_edges[1][1]};
-//    double phi{this->m_edges[1][2]};
-//    double* residuals{new double[3]};
+    Eigen::Matrix3d covar;
+    covar << 1e3, 0, 0, 0, 1e3, 0, 0, 0, 1e2;
 
-//    res(&zx, &zy, &phi, residuals);
-//    double* truth{new double[3]};
-//    truth[0] = -.36461;
-//    truth[1] = 0.0;
-//    truth[2] = .4143;
+    reo_structs::EdgeResidual res(Tx, Ty, Tphi, covar);
+    double zx{this->m_edges[1][0]};
+    double zy{this->m_edges[1][1]};
+    double phi{this->m_edges[1][2]};
+    double* residuals{new double[3]};
 
-//    expectNearVec(truth, residuals);
+    res(&zx, &zy, &phi, residuals);
+    double* truth{new double[3]};
+    truth[0] = -.36461;
+    truth[1] = 0.0;
+    truth[2] = .4143;
 
-//    delete[] truth;
-//    delete[] residuals;
-//}
+    expectNearVec(truth, residuals);
+
+    delete[] truth;
+    delete[] residuals;
+}
 
 //TEST_F(HouseREO, AskedForALCResidual_ReturnsCorrectResidual)
 //{
