@@ -26,11 +26,11 @@ TEST(VectorOfEdgesLoopClosuresAndCovariance, AskedIfInformationIsCorrect_Returns
 
     Eigen::Matrix3d edge_covar;
     edge_covar << 1e-5, 0, 0, 0, 1e-5, 0, 0, 0, 1e-3;
-    std::vector<Eigen::Matrix3d> edge_covars{edge_covar, edge_covar, edge_covar, edge_covar};
+    mat3d edge_covars{edge_covar, edge_covar, edge_covar, edge_covar};
 
     Eigen::Matrix3d lc_covar;
     lc_covar << 1e-3, 0, 0, 0, 1e-3, 0, 0, 0, 1e-1;
-    std::vector<Eigen::Matrix3d> lc_covars{lc_covar};
+    mat3d lc_covars{lc_covar};
 
     Eigen::Vector3d lc_edge{1.0, 1.0, 1.0};
     vec3d lc_edges{lc_edge};
@@ -52,11 +52,11 @@ TEST(REOWithDifferentVectorLengths, AskedIfSolvable_ReturnsFalse)
 
     Eigen::Matrix3d edge_covar;
     edge_covar << 1e-3, 0, 0, 0, 1e-3, 0, 0, 0, 1e-1;
-    std::vector<Eigen::Matrix3d> edge_covars;
+    mat3d edge_covars;
 
     Eigen::Matrix3d lc_covar;
     lc_covar << 1e-2, 0, 0, 0, 1e-2, 0, 0, 0, 1e-2;
-    std::vector<Eigen::Matrix3d> lc_covars{lc_covar};
+    mat3d lc_covars{lc_covar};
 
     Eigen::Vector3d lc_edge{1.0, 1.0, 1.0};
     vec3d lc_edges{lc_edge};
