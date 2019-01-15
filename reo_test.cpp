@@ -179,113 +179,114 @@ TEST_F(HouseREO, AskedForAnEdgeResidual_ReturnsCorrectResidual)
     delete[] residuals;
 }
 
-//TEST_F(HouseREO, AskedForALCResidual_ReturnsCorrectResidual)
+TEST_F(HouseREO, AskedForALCResidual_ReturnsCorrectResidual)
+{
+    double Tx{-1.0};
+    double Ty{1.0};
+    double Tphi{-3.0*PI/4.0};
+
+    Eigen::Matrix3d covar;
+    covar << 1e3, 0, 0, 0, 1e3, 0, 0, 0, 1e2;
+
+    int from_id{7};
+    int to_id{1};
+
+    reo_structs::LCResidual res(Tx, Ty, Tphi, covar, from_id - to_id);
+    double* residuals{new double[3]};
+
+    double** parameters{new double*[3 * (from_id - to_id)]};
+
+    for(int i{to_id}; i < from_id; i++)
+    {
+        Eigen::Vector3d edge{this->m_edges[i]};
+        parameters[3*(i - to_id)] = new double[1];
+        parameters[3*(i - to_id)][0] = edge[0];
+
+        parameters[3*(i - to_id)+1] = new double[1];
+        parameters[3*(i - to_id)+1][0] = edge[1];
+
+        parameters[3*(i - to_id)+2] = new double[1];
+        parameters[3*(i - to_id)+2][0] = edge[2];
+    }
+
+    res(parameters, residuals);
+    double* truth{new double[3]};
+    truth[0] = -60.3427;
+    truth[1] = 6.1112;
+    truth[2] = 2.0464;
+
+    expectNearVec(truth, residuals);
+}
+
+TEST_F(HouseREO, AskedIfProblemIsSetUpCorrectly_ReturnsCorrectNumberOfResidualBlocksAndParameters)
+{
+    this->setUpOptimization();
+
+    int num_residual_blocks{this->m_problem.NumResidualBlocks()};
+    int num_parameters{this->m_problem.NumParameters()};
+
+    int true_num_res_blocks{13};
+    int true_num_parameters{24};
+
+    EXPECT_EQ(true_num_parameters, num_parameters);
+    EXPECT_EQ(true_num_res_blocks, num_residual_blocks);
+}
+
+TEST_F(HouseREO, AskedForOptimizedEdges_ReturnsCorrectWithinTolerance)
+{
+    this->setUpOptimization();
+    std::vector<Eigen::Vector3d> opt_edges{this->solveOptimization()};
+
+    Eigen::Vector3d edge1{1.0, 0.0, 1.570798};
+    Eigen::Vector3d edge2{1.0, 0.0, 1.570798};
+    Eigen::Vector3d edge3{1.0, 0.0, 1.570798};
+    Eigen::Vector3d edge4{1.0, 0.0, 2.356194};
+    Eigen::Vector3d edge5{sqrt(2.0), 0.0, 1.570798};
+    Eigen::Vector3d edge6{sqrt(2.0)/2.0, 0.0, 1.570798};
+    Eigen::Vector3d edge7{sqrt(2.0)/2.0, 0.0, 1.570798};
+    Eigen::Vector3d edge8{sqrt(2.0), 0.0, 0.0};
+    std::vector<Eigen::Vector3d> true_edges{edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8};
+
+    for(int i{0}; i<true_edges.size(); i++)
+    {
+        for(int j{0}; j< 2; j++)
+            EXPECT_NEAR(true_edges[i][j], opt_edges[i][j], .075);
+        EXPECT_NEAR(true_edges[i][2], opt_edges[i][2], .12);
+    }
+}
+
+//TEST(Filename, AskedToReadInFileToOptimize_ReadsCorrectValues)
 //{
-//    double Tx{-1.0};
-//    double Ty{1.0};
-//    double Tphi{-3.0*PI/4.0};
+//    std::string filename{"../../../final-project-b4sgren/libs/reo_optimization/test_file.txt"};
+//    REO optimizer(filename);
 
-//    Eigen::Vector3d covar{1e3, 1e3,1e2};
+//    std::vector<Eigen::Vector3d> edges{optimizer.getEdges()};
+//    std::vector<Eigen::Vector3d> edge_covars{optimizer.getEdgeCovar()};
+//    std::vector<Eigen::Vector3d> lc_edges{optimizer.getLCEdges()};
+//    std::vector<Eigen::Vector3d> lc_covars{optimizer.getLCCovars()};
+//    std::vector<Eigen::Vector2i> lcs{optimizer.getLCS()};
 
-//    int from_id{7};
-//    int to_id{1};
+//    Eigen::Vector3d edge{1.0, 0.0, 1.5708};
+//    Eigen::Vector3d covar{.001, .001, .1};
+//    Eigen::Vector3d lc_edge{.025, .13, .25};
+//    Eigen::Vector2i lc{4, 0};
 
-//    reo_structs::LCResidual res(Tx, Ty, Tphi, covar, from_id - to_id);
-//    double* residuals{new double[3]};
+//    std::vector<Eigen::Vector3d> t_edges{edge, edge, edge, edge};
+//    std::vector<Eigen::Vector3d> t_edge_covars{covar, covar, covar, covar};
+//    std::vector<Eigen::Vector3d> t_lc_edges{lc_edge};
+//    std::vector<Eigen::Vector3d> t_lc_covars{covar};
+//    std::vector<Eigen::Vector2i> t_lcs{lc};
 
-//    double** parameters{new double*[3 * (from_id - to_id)]};
-
-//    for(int i{to_id}; i < from_id; i++)
+//    for(int i{0}; i<t_edges.size(); i++)
 //    {
-//        Eigen::Vector3d edge{this->m_edges[i]};
-//        parameters[3*(i - to_id)] = new double[1];
-//        parameters[3*(i - to_id)][0] = edge[0];
-
-//        parameters[3*(i - to_id)+1] = new double[1];
-//        parameters[3*(i - to_id)+1][0] = edge[1];
-
-//        parameters[3*(i - to_id)+2] = new double[1];
-//        parameters[3*(i - to_id)+2][0] = edge[2];
+//        EXPECT_EQ(t_edges[i], edges[i]);
+//        EXPECT_EQ(t_edge_covars[i], edge_covars[i]);
 //    }
 
-//    res(parameters, residuals);
-//    double* truth{new double[3]};
-//    truth[0] = -60.3427;
-//    truth[1] = 6.1112;
-//    truth[2] = 2.0464;
-
-//    expectNearVec(truth, residuals);
-//}
-
-//TEST_F(HouseREO, AskedIfProblemIsSetUpCorrectly_ReturnsCorrectNumberOfResidualBlocksAndParameters)
-//{
-//    this->setUpOptimization();
-
-//    int num_residual_blocks{this->m_problem.NumResidualBlocks()};
-//    int num_parameters{this->m_problem.NumParameters()};
-
-//    int true_num_res_blocks{13};
-//    int true_num_parameters{24};
-
-//    EXPECT_EQ(true_num_parameters, num_parameters);
-//    EXPECT_EQ(true_num_res_blocks, num_residual_blocks);
-//}
-
-//TEST_F(HouseREO, AskedForOptimizedEdges_ReturnsCorrectWithinTolerance)
-//{
-//    this->setUpOptimization();
-//    std::vector<Eigen::Vector3d> opt_edges{this->solveOptimization()};
-
-//    Eigen::Vector3d edge1{1.0, 0.0, 1.570798};
-//    Eigen::Vector3d edge2{1.0, 0.0, 1.570798};
-//    Eigen::Vector3d edge3{1.0, 0.0, 1.570798};
-//    Eigen::Vector3d edge4{1.0, 0.0, 2.356194};
-//    Eigen::Vector3d edge5{sqrt(2.0), 0.0, 1.570798};
-//    Eigen::Vector3d edge6{sqrt(2.0)/2.0, 0.0, 1.570798};
-//    Eigen::Vector3d edge7{sqrt(2.0)/2.0, 0.0, 1.570798};
-//    Eigen::Vector3d edge8{sqrt(2.0), 0.0, 0.0};
-//    std::vector<Eigen::Vector3d> true_edges{edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8};
-
-//    for(int i{0}; i<true_edges.size(); i++)
+//    for(int i{0}; i < t_lcs.size(); i++)
 //    {
-//        for(int j{0}; j< 2; j++)
-//            EXPECT_NEAR(true_edges[i][j], opt_edges[i][j], .075);
-//        EXPECT_NEAR(true_edges[i][2], opt_edges[i][2], .12);
+//        EXPECT_EQ(t_lc_edges[i], lc_edges[i]);
+//        EXPECT_EQ(t_lc_covars[i], lc_covars[i]);
+//        EXPECT_EQ(t_lcs[i], lcs[i]);
 //    }
 //}
-
-////TEST(Filename, AskedToReadInFileToOptimize_ReadsCorrectValues)
-////{
-////    std::string filename{"../../../final-project-b4sgren/libs/reo_optimization/test_file.txt"};
-////    REO optimizer(filename);
-
-////    std::vector<Eigen::Vector3d> edges{optimizer.getEdges()};
-////    std::vector<Eigen::Vector3d> edge_covars{optimizer.getEdgeCovar()};
-////    std::vector<Eigen::Vector3d> lc_edges{optimizer.getLCEdges()};
-////    std::vector<Eigen::Vector3d> lc_covars{optimizer.getLCCovars()};
-////    std::vector<Eigen::Vector2i> lcs{optimizer.getLCS()};
-
-////    Eigen::Vector3d edge{1.0, 0.0, 1.5708};
-////    Eigen::Vector3d covar{.001, .001, .1};
-////    Eigen::Vector3d lc_edge{.025, .13, .25};
-////    Eigen::Vector2i lc{4, 0};
-
-////    std::vector<Eigen::Vector3d> t_edges{edge, edge, edge, edge};
-////    std::vector<Eigen::Vector3d> t_edge_covars{covar, covar, covar, covar};
-////    std::vector<Eigen::Vector3d> t_lc_edges{lc_edge};
-////    std::vector<Eigen::Vector3d> t_lc_covars{covar};
-////    std::vector<Eigen::Vector2i> t_lcs{lc};
-
-////    for(int i{0}; i<t_edges.size(); i++)
-////    {
-////        EXPECT_EQ(t_edges[i], edges[i]);
-////        EXPECT_EQ(t_edge_covars[i], edge_covars[i]);
-////    }
-
-////    for(int i{0}; i < t_lcs.size(); i++)
-////    {
-////        EXPECT_EQ(t_lc_edges[i], lc_edges[i]);
-////        EXPECT_EQ(t_lc_covars[i], lc_covars[i]);
-////        EXPECT_EQ(t_lcs[i], lcs[i]);
-////    }
-////}
