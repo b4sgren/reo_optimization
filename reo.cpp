@@ -10,7 +10,7 @@ typedef ceres::AutoDiffCostFunction<reo_structs::EdgeResidual, 3, 1, 1, 1> Odom_
 
 REO::REO(){}
 
-REO::REO(std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d>> edges, std::vector<Eigen::Vector2i> lcs,
+REO::REO(std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d>> edges, vec2i lcs,
          mat3d edge_covars, mat3d lc_covars,
          vec3d lc_edges)
 {
@@ -171,7 +171,7 @@ mat3d REO::getLCCovars() const
     return m_lc_covars;
 }
 
-std::vector<Eigen::Vector2i> REO::getLCS() const
+vec2i REO::getLCS() const
 {
     return m_lcs;
 }

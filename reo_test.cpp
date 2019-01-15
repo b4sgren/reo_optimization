@@ -22,7 +22,7 @@ TEST(VectorOfEdgesLoopClosuresAndCovariance, AskedIfInformationIsCorrect_Returns
 
     Eigen::Vector2i lc;
     lc << 3, 1;
-    std::vector<Eigen::Vector2i> lcs{lc};
+    vec2i lcs{lc};
 
     Eigen::Matrix3d edge_covar;
     edge_covar << 1e-5, 0, 0, 0, 1e-5, 0, 0, 0, 1e-3;
@@ -48,7 +48,7 @@ TEST(REOWithDifferentVectorLengths, AskedIfSolvable_ReturnsFalse)
 
     Eigen::Vector2i lc;
     lc << 2, 1;
-    std::vector<Eigen::Vector2i> lcs{lc};
+    vec2i lcs{lc};
 
     Eigen::Matrix3d edge_covar;
     edge_covar << 1e-3, 0, 0, 0, 1e-3, 0, 0, 0, 1e-1;
@@ -130,7 +130,7 @@ public:
         Eigen::Vector2i lc3{1, 7};
         Eigen::Vector2i lc4{3, 8};
         Eigen::Vector2i lc5{0, 6};
-        std::vector<Eigen::Vector2i> lcs{lc1, lc2, lc3, lc4, lc5};
+        vec2i lcs{lc1, lc2, lc3, lc4, lc5};
         m_lcs = lcs;
 
         Eigen::Vector3d lc_edge1{0.0, 0.0, .78539};
@@ -264,7 +264,7 @@ TEST_F(HouseREO, AskedForOptimizedEdges_ReturnsCorrectWithinTolerance)
 //    std::vector<Eigen::Vector3d> edge_covars{optimizer.getEdgeCovar()};
 //    std::vector<Eigen::Vector3d> lc_edges{optimizer.getLCEdges()};
 //    std::vector<Eigen::Vector3d> lc_covars{optimizer.getLCCovars()};
-//    std::vector<Eigen::Vector2i> lcs{optimizer.getLCS()};
+//    vec2i lcs{optimizer.getLCS()};
 
 //    Eigen::Vector3d edge{1.0, 0.0, 1.5708};
 //    Eigen::Vector3d covar{.001, .001, .1};
@@ -275,7 +275,7 @@ TEST_F(HouseREO, AskedForOptimizedEdges_ReturnsCorrectWithinTolerance)
 //    std::vector<Eigen::Vector3d> t_edge_covars{covar, covar, covar, covar};
 //    std::vector<Eigen::Vector3d> t_lc_edges{lc_edge};
 //    std::vector<Eigen::Vector3d> t_lc_covars{covar};
-//    std::vector<Eigen::Vector2i> t_lcs{lc};
+//    vec2i t_lcs{lc};
 
 //    for(int i{0}; i<t_edges.size(); i++)
 //    {
