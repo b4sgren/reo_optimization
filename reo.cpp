@@ -10,9 +10,9 @@ typedef ceres::AutoDiffCostFunction<reo_structs::EdgeResidual, 3, 1, 1, 1> Odom_
 
 REO::REO(){}
 
-REO::REO(std::vector<Eigen::Vector3d> edges, std::vector<Eigen::Vector2i> lcs,
+REO::REO(std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d>> edges, std::vector<Eigen::Vector2i> lcs,
          std::vector<Eigen::Matrix3d> edge_covars, std::vector<Eigen::Matrix3d> lc_covars,
-         std::vector<Eigen::Vector3d> lc_edges)
+         vec3d lc_edges)
 {
     m_edges = edges;
     m_lcs = lcs;
@@ -137,12 +137,12 @@ std::vector<double*> REO::setLCParameters(int from_id, int to_id, LC_CostFunctio
     return parameters;
 }
 
-std::vector<Eigen::Vector3d> REO::solveOptimization()
+vec3d REO::solveOptimization()
 {
     ceres::Solver::Summary summary;
     ceres::Solve(m_options, &m_problem, &summary);
 
-    std::vector<Eigen::Vector3d> opt_edges;
+    vec3d opt_edges;
     opt_edges.clear();
 
     for(int i{0}; i < m_edges.size(); i++)
@@ -151,7 +151,7 @@ std::vector<Eigen::Vector3d> REO::solveOptimization()
     return opt_edges;
 }
 
-std::vector<Eigen::Vector3d> REO::getEdges() const
+vec3d REO::getEdges() const
 {
     return m_edges;
 }
@@ -161,7 +161,7 @@ std::vector<Eigen::Matrix3d> REO::getEdgeCovar() const
     return m_edge_covars;
 }
 
-std::vector<Eigen::Vector3d> REO::getLCEdges() const
+vec3d REO::getLCEdges() const
 {
     return m_lc_edges;
 }
