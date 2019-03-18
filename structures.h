@@ -101,6 +101,7 @@ public:
             temp << zx, zy, theta;
             trans = concatenateTransform(trans, temp);
         }
+        trans = invertTransform(trans);
 
         Eigen::Matrix<T, 3, 3> xi;
         xi << T(m_xi(0, 0)), T(m_xi(0, 1)), T(m_xi(0, 2)), T(m_xi(1, 0)), T(m_xi(1, 1)), T(m_xi(1, 2)), T(m_xi(2, 0)), T(m_xi(2, 1)), T(m_xi(2, 2));
